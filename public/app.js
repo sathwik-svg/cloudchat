@@ -1,54 +1,98 @@
-const socket = io();
-const connection = document.getElementById('connection');
-const pulse = document.querySelector('.pulse');
-const messages = document.getElementById('messages');
-const form = document.getElementById('composer');
-const input = document.getElementById('message');
-const send = document.getElementById('send');
-const notice = document.getElementById('notice');
-const empty = document.getElementById('empty');
+'use strict';
 
-function setConnection(online) {
-  connection.textContent = online ? 'Connected live' : 'Reconnecting…';
-  pulse.classList.toggle('online', online);
-  send.disabled = !online;
-  notice.textContent = online
-    ? 'Connected. Messages are live in this room.'
-    : 'Messaging server unavailable. Retrying connection…';
+const socket = io();
+const form = document.getElementById('chat-form');
+const input = document.getElementById('message-input');
+const messages = document.getElementById('messages');
+const emptyState = document.getElementById('empty-state');
+const status = document.getElementById('connection-status');
+const characterCount = document.getElementById('character-count');
+
+function updateEmptyState() {
+  emptyState.style.display = messages.children.length ? 'none' : 'block';
 }
 
 function renderMessage(message) {
-  empty?.remove();
-  const article = document.createElement('article');
-  article.className = 'message';
-  const name = document.createElement('strong');
-  name.textContent = message.user || 'Guest';
-  const body = document.createElement('p');
-  body.textContent = message.text;
+  if (!message || typeof message.text !== 'string') return;
+
+  const row = document.createElement('article');
+  row.className = 'message';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.textContent = (message.user || 'G').slice(0, 1).toUpperCase();
+
+  const content = document.createElement('div');
+  content.className = 'message-content';
+
+  const heading = document.createElement('div');
+  heading.className = 'message-heading';
+
+  const username = document.createElement('strong');
+  username.textContent = message.user || 'Guest';
+
   const time = document.createElement('time');
-  time.textContent = new Date(message.time).toLocaleTimeString([], {
-    hour: '2-digit', minute: '2-digit'
-  });
-  article.append(name, body, time);
-  messages.appendChild(article);
-  messages.scrollTop = messages.scrollHeight;
+  const date = new Date(message.time);
+  time.dateTime = Number.isNaN(date.getTime()) ? '' : date.toISOString();
+  time.textContent = Number.isNaN(date.getTime())
+    ? ''
+    : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const text = document.createElement('div');
+  text.className = 'message-text';
+  text.textContent = message.text;
+
+  heading.append(username, time);
+  content.append(heading, text);
+  row.append(avatar, content);
+  messages.appendChild(row);
+
+  while (messages.children.length > 100) {
+    messages.firstElementChild.remove();
+  }
+
+  updateEmptyState();
+  messages.scrollIntoView({ block: 'end', behavior: 'smooth' });
 }
 
-socket.on('connect', () => setConnection(true));
-socket.on('disconnect', () => setConnection(false));
-socket.on('connect_error', () => setConnection(false));
-socket.on('history', (items) => items.forEach(renderMessage));
+socket.on('connect', () => {
+  status.textContent = 'Connected';
+});
+
+socket.on('disconnect', () => {
+  status.textContent = 'Reconnecting...';
+});
+
+socket.on('connect_error', () => {
+  status.textContent = 'Connection error';
+});
+
+socket.on('history', (history) => {
+  messages.replaceChildren();
+
+  if (Array.isArray(history)) {
+    history.slice(-100).forEach(renderMessage);
+  }
+
+  updateEmptyState();
+});
+
 socket.on('chat:message', renderMessage);
+
+input.addEventListener('input', () => {
+  characterCount.textContent = `${input.value.length}/500`;
+});
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
+
   const text = input.value.trim();
-  if (!text || !socket.connected) return;
+  if (!text || text.length > 500 || !socket.connected) return;
+
   socket.emit('chat:send', { text });
   input.value = '';
+  characterCount.textContent = '0/500';
   input.focus();
 });
 
-document.getElementById('theme').addEventListener('click', () => {
-  document.body.classList.toggle('light');
-});
+updateEmptyState();

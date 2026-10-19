@@ -3,67 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080d1b">
-  <meta name="description" content="CloudChat — a cloud-native real-time messaging MVP.">
-  <title>CloudChat | Connect beyond boundaries</title>
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="CloudChat — real-time messaging powered by cloud-native technology.">
+  <title>CloudChat — Real-time Messaging</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="/app.js" defer></script>
 </head>
 <body>
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="CloudChat home">
+        <span class="brand-mark">C</span>
+        <span>cloud<span class="brand-light">chat</span></span>
+      </a>
 
-  <header class="topbar">
-    <a class="brand" href="/">
-      <span class="brand-icon">C</span>
-      <span>cloud<span class="accent">chat</span><small>CLOUD COMMUNICATIONS</small></span>
-    </a>
-    <div class="top-status"><span class="pulse"></span><span id="connection">Connecting...</span></div>
-  </header>
+      <div class="workspace-label">WORKSPACE</div>
+      <button class="workspace-switch">
+        <span class="workspace-avatar">S</span>
+        <span class="workspace-info"><strong>My workspace</strong><small>Personal space</small></span>
+        <span class="chevron">⌄</span>
+      </button>
 
-  <main class="layout">
-    <section class="hero">
-      <div class="eyebrow"><span class="spark">✦</span> YOUR SPACE. YOUR CONVERSATION.</div>
-      <h1>Good ideas<br>travel <span class="gradient">at the speed<br>of light.</span></h1>
-      <p class="intro">A real-time messaging experience, engineered for the cloud. Simple conversations, built on reliable infrastructure.</p>
-      <div class="metrics">
-        <div><strong>LIVE</strong><span>Messaging</span></div>
-        <div><strong>24/7*</strong><span>Cloud-ready</span></div>
-        <div><strong>01</strong><span>Open room</span></div>
-      </div>
-      <p class="footnote">*Availability depends on the hosting infrastructure.</p>
-      <div class="architecture">
-        <span class="arch-icon">⌘</span>
-        <div><strong>Powered by open technology</strong><small>Ubuntu · Node.js · WebSockets · GitHub</small></div>
-        <span class="arrow">↗</span>
-      </div>
-    </section>
+      <div class="nav-label">MENU</div>
+      <nav class="navigation" aria-label="Main navigation">
+        <a class="nav-item active" href="#chat"><span class="nav-icon">▤</span> Messages <span class="nav-count">1</span></a>
+        <a class="nav-item" href="#activity"><span class="nav-icon">◷</span> Activity</a>
+        <a class="nav-item" href="#saved"><span class="nav-icon">☆</span> Saved messages</a>
+      </nav>
 
-    <section class="chat-card">
-      <div class="chat-header">
-        <div class="room-icon">✳</div>
-        <div class="room-info"><strong>Launch Room</strong><span><i></i> Real-time conversation</span></div>
-        <button id="theme" class="icon-button" aria-label="Toggle light and dark theme">☼</button>
+      <div class="sidebar-divider"></div>
+      <div class="section-heading"><span>CHANNELS</span><button aria-label="Add channel">+</button></div>
+      <a class="channel active-channel" href="#general"><span>#</span> general</a>
+      <a class="channel" href="#engineering"><span>#</span> engineering</a>
+      <a class="channel" href="#random"><span>#</span> random</a>
+
+      <div class="sidebar-spacer"></div>
+      <div class="server-card">
+        <span class="server-icon">⌘</span>
+        <div><strong>CloudChat Server</strong><small><span class="status-dot"></span> Connected workspace</small></div>
       </div>
-      <div class="room-banner">
-        <div class="banner-orb">✦</div>
-        <strong>Welcome to your cloud space</strong>
-        <span>Share ideas. Build something extraordinary.</span>
+      <div class="profile">
+        <div class="avatar avatar-purple">G</div>
+        <div class="profile-info"><strong>Guest user</strong><small>Free workspace</small></div>
+        <button class="icon-button" aria-label="Profile options">···</button>
       </div>
-      <div id="messages" class="messages" aria-live="polite">
-        <div class="day-divider"><span>START OF CONVERSATION</span></div>
-        <div class="empty-state" id="empty">Your next great conversation starts here.</div>
-      </div>
-      <div id="notice" class="notice">Connecting to the messaging server…</div>
-      <form id="composer" class="composer">
-        <label class="sr-only" for="message">Your message</label>
-        <input id="message" maxlength="500" placeholder="Write something brilliant..." autocomplete="off">
-        <button id="send" type="submit" aria-label="Send message">↗</button>
-      </form>
-      <div class="composer-footer"><span>ENTER TO SEND</span><span>SECURE CONNECTION WHEN HTTPS IS ENABLED</span></div>
-    </section>
-  </main>
-  <footer><span>© 2026 CLOUDCHAT</span><span>BUILT WITH CURIOSITY <b>✦</b> ENGINEERED FOR THE CLOUD</span></footer>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/app.js"></script>
+    </aside>
+
+    <main class="chat-area" id="chat">
+      <header class="topbar">
+        <div class="channel-title">
+          <div class="mobile-brand"><span class="brand-mark">C</span></div>
+          <span class="hash">#</span>
+          <div><h1>general</h1><p>Where the team connects</p></div>
+        </div>
+        <div class="topbar-actions">
+          <div class="online-indicator"><span class="status-dot"></span><span id="connection-status">Connecting...</span></div>
+          <button class="icon-button search-button" aria-label="Search messages">⌕</button>
+          <button class="icon-button" aria-label="More options">···</button>
+        </div>
+      </header>
+
+      <section class="message-area" aria-label="Chat messages">
+        <div class="welcome">
+          <div class="welcome-icon">#</div>
+          <h2>Welcome to <span>#general</span></h2>
+          <p>This is the beginning of your team's conversation. Say hello and start building something great.</p>
+          <div class="welcome-meta"><span class="status-dot"></span> Your messages appear here in real time.</div>
+        </div>
+
+        <div id="messages" class="messages" aria-live="polite" aria-relevant="additions"></div>
+        <div id="empty-state" class="empty-state">No messages yet. Start the conversation! 👋</div>
+      </section>
+
+      <footer class="composer-wrap">
+        <form id="chat-form" class="composer">
+          <button type="button" class="composer-action" aria-label="Attachments" title="Attachments coming soon">+</button>
+          <label class="sr-only" for="message-input">Write a message</label>
+          <input id="message-input" name="message" type="text" maxlength="500" autocomplete="off" placeholder="Message #general..." required>
+          <div class="composer-tools">
+            <span id="character-count">0/500</span>
+            <button class="send-button" type="submit" aria-label="Send message" title="Send message">↑</button>
+          </div>
+        </form>
+        <p class="composer-hint">Press <kbd>Enter</kbd> to send <span>·</span> Be kind to one another.</p>
+      </footer>
+    </main>
+
+    <aside class="details-panel">
+      <div class="details-header"><h2>Channel details</h2><button class="icon-button" aria-label="Close details">×</button></div>
+      <div class="channel-banner"><span>#</span></div>
+      <div class="channel-details"><h3>general</h3><p>Everyone is welcome here.</p><div class="detail-tags"><span>🌐 Public</span><span>💬 Chat</span></div></div>
+      <div class="details-divider"></div>
+      <section class="detail-section"><h3>About this channel</h3><p>A place for announcements, ideas, questions, and everyday conversations.</p></section>
+      <div class="details-divider"></div>
+      <section class="detail-section">
+        <div class="member-heading"><h3>Members</h3><span class="member-count">1</span></div>
+        <div class="member"><div class="avatar avatar-purple">G</div><div><strong>Guest user</strong><small><span class="status-dot"></span> Online</small></div></div>
+      </section>
+      <div class="details-divider"></div>
+      <section class="detail-section"><h3>Technology</h3><div class="tech-tags"><span>Node.js</span><span>Socket.IO</span><span>Podman</span></div></section>
+      <div class="details-footer"><span class="status-dot"></span> Powered by CloudChat</div>
+    </aside>
+  </div>
 </body>
 </html>

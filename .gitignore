@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+public.backup-*/
+public/*.bak
+server.js.bak
