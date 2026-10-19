@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
 if (require.main === module) {
   const port = Number(process.env.PORT) || 3000;
-  server.listen(port, '0.0.0.0', () => {
+  server.listen(port, process.env.HOST || '0.0.0.0', () => {
     console.log(`CloudChat listening on port ${port}`);
   });
 }

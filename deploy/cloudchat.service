@@ -1,0 +1,23 @@
+[Unit]
+Description=CloudChat Node.js Application
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cloudchat
+Group=cloudchat
+WorkingDirectory=/opt/cloudchat
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3000
+ExecStart=/usr/bin/node /opt/cloudchat/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
