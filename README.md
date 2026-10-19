@@ -1,79 +1,99 @@
-# CloudChat — Real-Time Messaging Platform
+# CloudChat | Real-Time Messaging Infrastructure
 
-**A self-hosted messaging application built with Node.js, Express, Socket.IO, and PostgreSQL.**
+**A containerised real-time messaging application deployed on Ubuntu Linux using Podman, Node.js, Socket.IO, and PostgreSQL.**
 
-CloudChat is a hands-on software engineering project focused on real-time communication, persistent data storage, containerisation, and Linux server deployment. It demonstrates practical experience building and running an application in a self-managed environment.
+[![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-Real--time%20communication-010101?logo=socketdotio&logoColor=white)](https://socket.io/)
+[![Podman](https://img.shields.io/badge/Podman-Containers-892CA0?logo=podman&logoColor=white)](https://podman.io/)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-Linux-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/)
 
-## 🚀 Project Overview
+---
 
-CloudChat combines a web-based chat interface with a Node.js backend, real-time communication through Socket.IO, and PostgreSQL for message storage.
+## Overview
 
-### Key Features
+CloudChat is a self-hosted messaging application developed to explore real-time application architecture, database persistence, containerisation, and Linux service operations.
 
-- Real-time messaging architecture using Socket.IO
-- Backend API built with Node.js and Express
-- PostgreSQL database integration
-- Containerised deployment using Podman
-- Persistent database storage
-- Health-check endpoint for service monitoring
-- Ubuntu Linux home-server deployment
-- Custom web interface with CSS styling and animations
+The project brings together a Node.js application, Socket.IO communication, and PostgreSQL storage in a containerised environment running on an Ubuntu home server.
 
-## 🏗️ Architecture
+Beyond application development, the project provides a practical environment for learning service health monitoring, container networking, configuration management, and deployment troubleshooting.
 
-```text
-                 Web Browser
-                      |
-                      v
-             CloudChat Frontend
-              HTML / CSS / JS
-                      |
-                      v
-          Node.js + Express Server
-                 Socket.IO
-                      |
-             +--------+--------+
-             |                 |
-             v                 v
-          REST API        Real-time Events
-             |
-             v
-          PostgreSQL
-       Persistent Storage
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Web Browser] --> B[HTML / CSS / JavaScript]
+    B --> C[Node.js + Express]
+    C <--> D[Socket.IO]
+    C --> E[PostgreSQL]
+    F[Ubuntu Linux Host] --> G[Podman]
+    G --> C
+    G --> E
+    C --> H[Health Endpoint]
 ```
 
-### Deployment Architecture
+### Core Components
 
-```text
-Ubuntu Linux Home Server
-          |
-          v
-      Podman
-          |
-     +----+----------------+
-     |                     |
-     v                     v
- CloudChat App        PostgreSQL
- Port 3001            Port 5432
-     |
-     v
- Health Check
- /api/health
-```
-
-## 🧰 Technology Stack
-
-| Area | Technologies |
+| Component | Responsibility |
 |---|---|
-| Backend | Node.js, Express |
-| Real-time communication | Socket.IO |
+| Web client | User interface and browser-side interaction |
+| Node.js and Express | Application server and HTTP endpoints |
+| Socket.IO | Real-time communication |
+| PostgreSQL | Relational data storage |
+| Podman | Container execution and networking |
+| Ubuntu Linux | Host operating system and service environment |
+
+## Engineering Highlights
+
+- **Real-time application design** — integrating browser-side events with a Socket.IO server.
+- **Database integration** — connecting the application to PostgreSQL.
+- **Containerised deployment** — running application services with Podman.
+- **Linux operations** — deploying and managing services on an Ubuntu home server.
+- **Health monitoring** — exposing `/api/health` for application and database status checks.
+- **Configuration management** — separating database connection settings from application source code.
+- **Version control** — maintaining the project in Git and GitHub.
+
+## Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Application runtime | Node.js |
+| HTTP server | Express |
+| Real-time transport | Socket.IO |
 | Database | PostgreSQL |
 | Frontend | HTML, CSS, JavaScript |
-| Containers | Podman |
+| Container engine | Podman |
 | Operating system | Ubuntu Linux |
-| Version control | Git, GitHub |
+| Source control | Git, GitHub |
 
-## ⚙️ Running Locally
+## Deployment Environment
+
+The application has been deployed to a self-managed Ubuntu Linux server.
+
+| Setting | Configuration |
+|---|---|
+| Application container | `cloudchat` |
+| Database container | `cloudchat-postgres` |
+| Container networking | `cloudchat-network` |
+| Host application port | `3001` |
+| Application health endpoint | `/api/health` |
+| Container management | Podman with user-level systemd integration |
+
+The database is configured as a separate service from the application, allowing the components to communicate over a container network.
+
+> **Security note:** The current LAN deployment is intended for development and learning. Public internet exposure requires appropriate authentication, HTTPS, access controls, backups, and security testing.
+
+## Health Verification
+
+CloudChat provides a health endpoint for operational checks.
+
+```bash
+curl http://127.0.0.1:3001/api/health
+```
+
+The endpoint has returned a healthy application status with a connected database in the development environment.
+
+## Local Development
 
 ### Prerequisites
 
@@ -94,76 +114,55 @@ cd cloudchat
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Configure the database
 
-Create a `.env` file using the variable names expected by the application. Configure the PostgreSQL connection string according to your local database.
+Set the database connection environment variable expected by the application. Keep credentials in a local environment file or another secure configuration mechanism.
 
-**Never commit `.env` files, passwords, or database credentials.**
+Never commit passwords, database credentials, or production environment files.
 
 ### 4. Start the application
 
-Use the start command defined in `package.json`. For example, if the project defines `npm start`:
+Check the scripts defined in `package.json`, then run the appropriate start command. If `start` is configured:
 
 ```bash
 npm start
 ```
 
-Open the local address and port configured by the application.
+## Reliability and Security Roadmap
 
-## 🩺 Health Monitoring
+The next development milestones focus on making the application easier to test, operate, and maintain.
 
-CloudChat exposes a health endpoint:
+- [ ] Automated unit and integration tests
+- [ ] Continuous integration using GitHub Actions
+- [ ] Structured application logging
+- [ ] Authentication and authorisation
+- [ ] Request validation and rate limiting
+- [ ] HTTPS through a reverse proxy
+- [ ] Database backup and restore testing
+- [ ] Resource limits and container security hardening
+- [ ] Operational metrics and alerting
+- [ ] Documented deployment and recovery procedures
 
-```text
-GET /api/health
-```
+## Project Scope
 
-This endpoint can be used to check whether the application is responding and its database connection is healthy.
+CloudChat is a practical engineering project, not a claim of production readiness. Its purpose is to develop and demonstrate skills in application integration, container operations, Linux deployment, and reliability-oriented engineering.
 
-## 🐧 Linux & Container Operations
+## About the Developer
 
-The project is deployed on an Ubuntu home server using Podman. This provides practical experience with:
+**Computer Science and Engineering Student | Cloud & DevOps Engineering**
 
-- Building and running container images
-- Configuring application networking
-- Managing application environment variables
-- Connecting application and database containers
-- Running health checks
-- Restarting and troubleshooting services
-- Managing changes through Git and GitHub
+I am a B.Tech Computer Science and Engineering student at Vasireddy Venkatadri Institute of Technology (VVIT), India, with a strong interest in cloud infrastructure, DevOps, automation, and site reliability engineering.
 
-## 🔐 Security Considerations
+I build hands-on projects to strengthen my understanding of Linux systems, containerised applications, infrastructure operations, and software delivery.
 
-- Keep database credentials outside the source code.
-- Exclude environment files and secrets from Git.
-- Avoid exposing the PostgreSQL port publicly.
-- Use a reverse proxy and HTTPS before exposing the application to the internet.
-- Add authentication, authorisation, rate limiting, and input validation before production use.
+My long-term career goal is to grow into a Cloud Solutions Architect role, developing the engineering fundamentals required to design secure, scalable, and reliable systems.
 
-## 🗺️ Future Improvements
+### Connect
 
-- User registration and authentication
-- Private chat rooms and group conversations
-- Improved message history and pagination
-- Automated tests and continuous integration
-- Structured logging and application metrics
-- HTTPS and reverse-proxy deployment
-- Automated backup and database recovery procedures
-
-## 👨‍💻 About the Developer
-
-I'm a Computer Science and Engineering student at **Vasireddy Venkatadri Institute of Technology (VVIT)**, India, building practical projects in cloud computing, Linux, software engineering, and DevOps.
-
-My long-term goal is to develop the skills needed to work as a **Cloud Engineer, DevOps Engineer, or Site Reliability Engineer**, with a focus on reliable systems, automation, and production-oriented engineering.
-
-I value hands-on learning, clear documentation, troubleshooting, and continuously improving software through practical projects.
-
-## 🔗 Project Links
-
-- **GitHub Repository:** https://github.com/sathwik-svg/cloudchat
-- **Developer Portfolio:** https://portfolio-wuht.onrender.com
-- **LinkedIn:** https://www.linkedin.com/in/sathwik-ganji-a80b143b5
+- **GitHub:** [sathwik-svg](https://github.com/sathwik-svg)
+- **Portfolio:** [Cloud & DevOps Portfolio](https://portfolio-wuht.onrender.com)
+- **LinkedIn:** [Professional Profile](https://www.linkedin.com/in/sathwik-ganji-a80b143b5)
 
 ---
 
-*Built as a practical learning project exploring real-time applications, containerisation, and Linux-based deployment.*
+*Designed and deployed as a hands-on exploration of real-time software, containerisation, and Linux-based service operations.*
